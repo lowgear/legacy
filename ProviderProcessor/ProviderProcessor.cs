@@ -13,10 +13,10 @@ namespace ProviderProcessing
 		private static readonly ILog log = LogManager.GetLogger(typeof(ProviderProcessor));
 		private readonly ProviderRepository repo;
 
-		public ProviderProcessor()
-		{
-			repo = new ProviderRepository();
-		}
+	    public ProviderProcessor(ProviderRepository repo)
+	    {
+	        this.repo = repo;;
+	    }
 
 		public ProcessReport ProcessProviderData(string message)
 		{
@@ -64,7 +64,7 @@ namespace ProviderProcessing
 
 		private IEnumerable<ProductValidationResult> ValidateNames(ProductData[] data)
 		{
-			var reference = ProductsReference.GetInstance();
+			var reference = GetInstance();
 			foreach (var product in data)
 			{
 				if (!reference.FindCodeByName(product.Name).HasValue)
@@ -73,7 +73,12 @@ namespace ProviderProcessing
 			}
 		}
 
-		private IEnumerable<ProductValidationResult> ValidatePricesAndMeasureUnitCodes(ProductData product)
+	    public virtual ProductsReference GetInstance()
+	    {
+	        return ProductsReference.GetInstance();
+	    }
+
+	    private IEnumerable<ProductValidationResult> ValidatePricesAndMeasureUnitCodes(ProductData product)
 		{
 			if (product.Price <= 0)
 				yield return new ProductValidationResult(product, "Bad price", ProductValidationSeverity.Warning);
@@ -82,13 +87,13 @@ namespace ProviderProcessing
 					"Bad units of measure", ProductValidationSeverity.Warning);
 		}
 
-		private bool IsValidMeasureUnitCode(string measureUnitCode)
+		private static bool IsValidMeasureUnitCode(string measureUnitCode)
 		{
 			var reference = MeasureUnitsReference.GetInstance();
 			return reference.FindByCode(measureUnitCode) != null;
 		}
 
-		private string FormatData(ProviderData data)
+		private static string FormatData(ProviderData data)
 		{
 			return data != null
 				? data.Id + " for " + data.ProviderId + " products count " + data.Products.Length

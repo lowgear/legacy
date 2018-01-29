@@ -3,7 +3,7 @@ using System;
 namespace ProviderProcessing.References
 {
 	public class ProductsReference
-	{
+    {
 		private static ProductsReference instance;
 
 		public static ProductsReference GetInstance()
@@ -16,7 +16,7 @@ namespace ProviderProcessing.References
 			throw new NotImplementedException("Долгая-долгая инициализация справочника.");
 		}
 
-		public int? FindCodeByName(string name)
+		public virtual int? FindCodeByName(string name)
 		{
 			throw new NotImplementedException("Работа со справочником");
 		}
